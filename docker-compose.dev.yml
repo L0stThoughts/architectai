@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: 
+      context: ./frontend
+    command: npm run dev --prefix /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"

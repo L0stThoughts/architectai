@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+alembic
+pgvector
+redis
+langgraph
+langchain
+langchain-openai
+langchain-community
+pydantic-settings
+httpx
+bandit
+pytest
+pytest-asyncio
+playwright

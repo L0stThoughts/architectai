@@ -1,0 +1,266 @@
+{
+  "project_name": "ArchitectAI",
+  "version": "1.0.0",
+  "components": [
+    {
+      "name": "Frontend Dashboard",
+      "type": "webapp",
+      "tech": ["Next.js", "React", "TypeScript", "Tailwind", "SSE"],
+      "responsibilities": [
+        "Collect Product Goal input",
+        "Display live job progress",
+        "Render file tree and artifact previews",
+        "Show test results and security reports",
+        "Download generated project ZIP"
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "FastAPI Control Plane",
+      "type": "api",
+      "tech": ["FastAPI", "Pydantic", "Uvicorn"],
+      "responsibilities": [
+        "Expose REST endpoints",
+        "Serve SSE event streams",
+        "Manage job lifecycle",
+        "Persist state and artifacts",
+        "Package ZIP bundles"
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "LangGraph Orchestrator Agent",
+      "type": "agent-runtime",
+      "tech": ["LangGraph", "LangChain-compatible models"],
+      "responsibilities": [
+        "Plan full-stack architecture from Product Goal",
+        "Maintain workflow state",
+        "Dispatch tasks to sub-agents",
+        "Manage tester-coder feedback loop",
+        "Enforce quality and security gates"
+      ],
+      "complexity": "high"
+    },
+    {
+      "name": "Coder Agent",
+      "type": "agent",
+      "tech": ["LLM tool-calling", "repo-aware generation", "diff patching"],
+      "responsibilities": [
+        "Generate production-grade code files",
+        "Patch code from structured bug reports",
+        "Update manifests and dependencies",
+        "Emit code generation metadata"
+      ],
+      "complexity": "high"
+    },
+    {
+      "name": "Tester QA Agent",
+      "type": "agent",
+      "tech": ["Playwright", "Pytest"],
+      "responsibilities": [
+        "Generate E2E tests for frontend",
+        "Generate unit and integration tests for backend",
+        "Run tests in isolated environment",
+        "Emit structured bug reports with logs and traces"
+      ],
+      "complexity": "high"
+    },
+    {
+      "name": "Security Auditor Agent",
+      "type": "agent",
+      "tech": ["bandit", "pip-audit", "eslint-security", "npm audit"],
+      "responsibilities": [
+        "Scan for OWASP Top 10 risks",
+        "Analyze insecure configs",
+        "Produce severity-ranked findings",
+        "Recommend remediations"
+      ],
+      "complexity": "medium-high"
+    },
+    {
+      "name": "PostgreSQL with pgvector",
+      "type": "database",
+      "tech": ["PostgreSQL 16", "pgvector"],
+      "responsibilities": [
+        "Store projects, jobs, artifacts, logs",
+        "Store test runs and security findings",
+        "Store embeddings for retrieval",
+        "Support transactional consistency"
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "Redis Event and Queue Layer",
+      "type": "infra",
+      "tech": ["Redis"],
+      "responsibilities": [
+        "Queue agent tasks",
+        "Publish progress events",
+        "Support lightweight fan-out"
+      ],
+      "complexity": "low-medium"
+    },
+    {
+      "name": "Docker Compose Monorepo Runtime",
+      "type": "infra",
+      "tech": ["Docker Compose", "Nginx", "Next.js", "FastAPI", "PostgreSQL", "Redis"],
+      "responsibilities": [
+        "Run generated full-stack app locally",
+        "Provide reproducible execution environment",
+        "Support test and security tooling"
+      ],
+      "complexity": "medium"
+    }
+  ],
+  "tech_stack": {
+    "frontend": {
+      "choice": "Next.js",
+      "why": [
+        "Excellent dashboard ergonomics",
+        "Strong TypeScript ecosystem",
+        "Good streaming UI support"
+      ]
+    },
+    "backend": {
+      "choice": "FastAPI",
+      "why": [
+        "Async-first",
+        "Pydantic contracts",
+        "Faster API-oriented development than Django"
+      ]
+    },
+    "orchestration": {
+      "choice": "LangGraph",
+      "why": [
+        "Explicit state transitions",
+        "Durable execution",
+        "Human-in-the-loop support",
+        "Better fit than AutoGen for bounded production workflows"
+      ]
+    },
+    "database": {
+      "choice": "PostgreSQL + pgvector",
+      "why": [
+        "Single system for relational and vector data",
+        "Lower complexity than Pinecone",
+        "Transactional alignment with artifacts and state"
+      ]
+    },
+    "queue": {
+      "choice": "Redis",
+      "why": [
+        "Simple and fast",
+        "Good fit for transient task/event handling"
+      ]
+    },
+    "testing": {
+      "frontend": "Playwright",
+      "backend": "Pytest"
+    },
+    "security": {
+      "tools": ["bandit", "pip-audit", "eslint-security", "npm audit", "secret scanning"]
+    },
+    "proxy": {
+      "choice": "Nginx"
+    }
+  },
+  "agent_states": [
+    "INTAKE",
+    "PLAN",
+    "GENERATE",
+    "TEST",
+    "EVALUATE_REPAIR",
+    "PATCH",
+    "RETEST",
+    "SECURITY_SCAN",
+    "SECURITY_PATCH",
+    "RETEST_SECURITY",
+    "PACKAGE",
+    "FAILED_REVIEW",
+    "COMPLETE",
+    "COMPLETE_WITH_WARNINGS"
+  ],
+  "db_tables": [
+    "projects",
+    "jobs",
+    "artifacts",
+    "agent_messages",
+    "test_runs",
+    "bug_reports",
+    "security_findings",
+    "embeddings",
+    "event_stream"
+  ],
+  "api_routes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/projects",
+      "purpose": "Create project and start generation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects",
+      "purpose": "List projects"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}",
+      "purpose": "Get project summary"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}",
+      "purpose": "Get job details"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/events/stream",
+      "purpose": "SSE progress stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/events",
+      "purpose": "Fetch historical events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/artifacts",
+      "purpose": "List artifacts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/artifacts/{artifact_id}",
+      "purpose": "Get artifact content"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/tests",
+      "purpose": "Get test results"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/bugs",
+      "purpose": "Get bug reports"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/security",
+      "purpose": "Get security findings"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/jobs/{job_id}/bundle",
+      "purpose": "Download generated ZIP bundle"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/jobs/{job_id}/retry",
+      "purpose": "Retry job from a failed state"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/jobs/{job_id}/approvals",
+      "purpose": "Record approval or override for future human-in-loop flows"
+    }
+  ]
+}
